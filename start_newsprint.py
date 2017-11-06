@@ -15,15 +15,15 @@ import os
 #########################
 #To get the current sprint version
 #config values
-#AUTH_TOKEN = "token 1d726f6163785e6e7bd6c7205d1c1a806a73ace6"
-giturl = "https://api.github.com/repos/MANOHAR452/devops/"
+AUTH_TOKEN = "token 3e38c40c4dce84e27d58df5d5929a09bb2cd76cb"
+giturl = "https://api.github.com/repos/rakeshcc87/Stock/"
 commit_message = "Automated commit to update sprint version at the beginning of sprint"
 xpc_version_file = "contents/sprint_version.txt?ref=master"
 sha = None
 
 def getContent(filePath):
     try:
-        r = requests.get(str(giturl) + str(filePath))
+        r = requests.get(str(giturl) + str(filePath), headers={'Authorization':AUTH_TOKEN})
         global sha
         sha = r.json()['sha']
         decodedString = base64.b64decode(r.json()['content'])
@@ -37,13 +37,13 @@ def getContent(filePath):
 
 #logging.basicConfig(level=logging.DEBUG)
 
-username = "MANOHAR452"
-password = "xxxxxxxxxx"
-#HEADER = {"Authorization": "bearer 1d726f6163785e6e7bd6c7205d1c1a806a73ace6"}
+username = "rakeshcc87"
+password = "xxxxxx"
+HEADER = {"Authorization": "bearer 3e38c40c4dce84e27d58df5d5929a09bb2cd76cb"}
 
 
 
-API_PATH = "https://api.github.com/repos/MANOHAR452"
+API_PATH = "https://api.github.com/repos/rakeshcc87"
 
 
 
@@ -54,7 +54,7 @@ def get_sha_of_branch(branch, user_repo):
     '''
     logging.debug('branch: %s user_repo: %s' % (branch, user_repo))
     url = API_PATH + user_repo + "/git/refs/heads/" + branch
-    r = requests.get(url)
+    r = requests.get(url, headers=HEADER)
     try:
         j = r.json()
         logging.debug(j)
@@ -77,7 +77,7 @@ def create_branch_from_branch(target, base, user_repo):
             "sha": sha
             }
     try:
-        r = requests.post(url, data=json.dumps(data), auth=(username, password))
+        r = requests.post(url, data=json.dumps(data), headers=HEADER)
         j = r.json()
         if 'message' in j:
             message = j["message"]
@@ -104,7 +104,7 @@ def merge_branch_to_branch(user_repo, master, branch, message):
             }
     url = API_PATH + user_repo + "/merges"
     try:
-        r = requests.post(url, data=json.dumps(data), auth=(username, password))
+        r = requests.post(url, data=json.dumps(data), headers=HEADER )
         if r.status_code == 204:
             print "No change for merging", master, 'into', branch
             return
@@ -133,9 +133,9 @@ def get_it_done(repo):
 def updateContent(filePath, branchName, encodedString):
     try:
         print sha    
-        put_data = { "branch": branchName, "content": encodedString, "message": commit_message, "sha": sha, "committer": { "name": "MANOHAR452", "email": "a.manohar452@gmail.com"}}
-        r = requests.put(giturl + filePath + '?ref=' + branchName, data=json.dumps(put_data), auth=(username, password))
-        if (r.status_code == 200):
+        put_data = { "branch": branchName, "content": encodedString, "message": commit_message, "sha": sha, "committer": { "name": "rakeshcc87", "email": "rakeshcc87@gmail.com"}}
+        r = requests.put(giturl + filePath + '?ref=' + branchName, data=json.dumps(put_data), headers=HEADER) 
+	if (r.status_code == 200):
             print 'Successfully updated version in ' + filePath
         else:
             print 'Error: Could not update version in ' + filePath + ' and the status_code is ' + str(r.status_code)
@@ -181,8 +181,8 @@ def findNewVersion(previousVersion):
 
 if __name__ == '__main__':
 
-    print ('working on /devops')
-    get_it_done('/devops')
+    print ('working on /Stock')
+    get_it_done('/Stock')
     print ('working on sprint_version.txt file update')
     file_content = getContent(xpc_version_file)
     previousVersion = file_content.split('current_sprint =')[1].split("'")[1]
